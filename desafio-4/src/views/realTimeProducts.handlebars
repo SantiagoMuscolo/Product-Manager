@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Real Time Products</title>
+</head>
+
+<body>
+    <h1>Real Time Products</h1>
+
+    <ul id="product-list">
+        <!-- Renderizar la lista de productos aquí -->
+        {{#each products}}
+        <li>{{this.name}}</li>
+        {{/each}}
+    </ul>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Establecer conexión con el servidor WebSocket
+        const socket = io();
+
+
+        socket.on('initial products', (products) => {
+            renderProducts(products);
+        });
+
+        socket.on('new product', (newProduct) => {
+            addProduct(newProduct);
+        });
+
+        socket.on('delete product', (productId) => {
+            deleteProduct(productId);
+        });
+
+        function renderProducts(products) {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+
+            products.forEach((product) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = product.name;
+                productList.appendChild(listItem);
+            });
+        }
+
+        function addProduct(newProduct) {
+            const productList = document.getElementById('product-list');
+            const listItem = document.createElement('li');
+            listItem.textContent = newProduct.name;
+            productList.appendChild(listItem);
+        }
+
+        function deleteProduct(productId) {
+            const productList = document.getElementById('product-list');
+            const items = productList.getElementsByTagName('li');
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].textContent === productId.toString()) {
+                    productList.removeChild(items[i]);
+                    break;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
